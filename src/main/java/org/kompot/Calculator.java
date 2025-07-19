@@ -28,8 +28,7 @@ public class Calculator extends JFrame {
     JLabel displayLabel = new JLabel();
     JPanel displayPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
-
-    Boolean next = true;
+    boolean canPlaceDot = true;
 
     Calculator() {
         setVisible(true);
@@ -75,21 +74,26 @@ public class Calculator extends JFrame {
                 JButton button1 = (JButton) e.getSource();
                 String buttonValue = button1.getText();
                 String text = displayLabel.getText();
-                String last = text.substring(text.length() - 1);
+                String last = text.length() > 1 ? text.substring(text.length() - 1) : "";
+                String prevLast = text.length() > 2 ? text.substring(text.length() - 2, text.length() - 1) : "";
                 switch (buttonValue) {
                     case "." -> {
-                        if ((next) && (!"+-÷×".contains(last))) {
+                        if ((canPlaceDot) && (!"+-÷×".contains(last))) {
                             displayLabel.setText(displayLabel.getText() + buttonValue);
-                            next = false;
+                            canPlaceDot = false;
                         }
                     }
-                    case "AC" -> {
-                        displayLabel.setText("0");
+                    case "0" -> {
+                        if (Objects.equals(displayLabel.getText(), "0")) displayLabel.setText("0");
+                        if (!("+-÷×".contains(prevLast) && "0".equals(last))) {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                        }
                     }
+                    case "AC" -> displayLabel.setText("0");
                     case "+", "-", "÷", "×" -> {
                         if (!"+-.÷×".contains(last)) {
                             displayLabel.setText(displayLabel.getText() + buttonValue);
-                            next = true;
+                            canPlaceDot = true;
                         }
                     }
                     default -> {
