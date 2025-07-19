@@ -82,7 +82,7 @@ public class Calculator extends JFrame {
                     String last = text.substring(text.length()-1);
                     switch (buttonValue) {
                         case "." -> {
-                            if ((next) && (!"+-".contains(last))) {
+                            if ((next) && (!"+-÷×".contains(last))) {
                                 displayLabel.setText(displayLabel.getText() + buttonValue);
                                 next = false;
                             }
@@ -90,15 +90,15 @@ public class Calculator extends JFrame {
                         case "AC" -> {
                             displayLabel.setText("0");
                         }
-                        case "+", "-" -> {
-                            if (!"+-.".contains(last)) {
+                        case "+", "-", "÷", "×" -> {
+                            if (!"+-.÷×".contains(last)) {
                                 displayLabel.setText(displayLabel.getText() + buttonValue);
                                 next = true;
                             }
                         }
                         default -> {
                             if (displayLabel.getText() == "0") displayLabel.setText(buttonValue);
-                            else {
+                            else if (!"0".contains(last)){
                                 displayLabel.setText(displayLabel.getText() + buttonValue);
                             }
                         }
