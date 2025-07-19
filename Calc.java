@@ -98,7 +98,7 @@ public class Calculator extends JFrame {
                         }
                         default -> {
                             if (displayLabel.getText() == "0") displayLabel.setText(buttonValue);
-                            else if (!"0".contains(last)){
+                            else {
                                 displayLabel.setText(displayLabel.getText() + buttonValue);
                             }
                         }
