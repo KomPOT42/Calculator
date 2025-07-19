@@ -3,18 +3,17 @@ package org.kompot;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Calculator extends JFrame {
     int borderWidth = 400;
     int borderHeight = 600;
 
     Color grayNSU = new Color(67, 67, 67);
-    Color greenNSU = new Color(127,205,51);
-    Color blueNSU = new Color(29,191,234);
-    Color lightGrayNSU = new Color(225,225,225);
+    Color greenNSU = new Color(127, 205, 51);
+    Color blueNSU = new Color(29, 191, 234);
+    Color lightGrayNSU = new Color(225, 225, 225);
 
     String[] buttonValues = {
             "AC", "+/-", "%", "÷",
@@ -43,7 +42,7 @@ public class Calculator extends JFrame {
 
         displayLabel.setBackground(grayNSU);
         displayLabel.setForeground(Color.white);
-        displayLabel.setFont(new Font("Arial", Font.PLAIN, 80 ));
+        displayLabel.setFont(new Font("Arial", Font.PLAIN, 80));
         displayLabel.setHorizontalAlignment(JLabel.RIGHT);
         displayLabel.setText("0");
         displayLabel.setOpaque(true);
@@ -53,55 +52,50 @@ public class Calculator extends JFrame {
         displayPanel.add(displayLabel);
         add(displayPanel, BorderLayout.NORTH);
 
-        buttonsPanel.setLayout(new GridLayout(5,4));
+        buttonsPanel.setLayout(new GridLayout(5, 4));
         buttonsPanel.setBackground(grayNSU);
         add(buttonsPanel);
 
-        for (int i = 0; i < buttonValues.length; i++) {
+        for (String value : buttonValues) {
             JButton button = new JButton();
-            String buttonValue = buttonValues[i];
             button.setFont(new Font("Arial", Font.PLAIN, 30));
-            button.setText(buttonValue);
+            button.setText(value);
             button.setFocusable(false);
             button.setBorder(new LineBorder(grayNSU));
-            if (Arrays.asList(topSymbols).contains(buttonValue)){
+            if (Arrays.asList(topSymbols).contains(value)) {
                 button.setBackground(blueNSU);
                 button.setForeground(Color.white);
-            }
-            else if (Arrays.asList(rightSymbols).contains(buttonValue)){
+            } else if (Arrays.asList(rightSymbols).contains(value)) {
                 button.setBackground(greenNSU);
                 button.setForeground(Color.white);
-            }
-            else button.setBackground(lightGrayNSU);
+            } else button.setBackground(lightGrayNSU);
             buttonsPanel.add(button);
 
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    JButton button = (JButton) e.getSource();
-                    String buttonValue = button.getText();
-                    String text = displayLabel.getText();
-                    String last = text.substring(text.length()-1);
-                    switch (buttonValue) {
-                        case "." -> {
-                            if ((next) && (!"+-÷×".contains(last))) {
-                                displayLabel.setText(displayLabel.getText() + buttonValue);
-                                next = false;
-                            }
+            button.addActionListener(e -> {
+                JButton button1 = (JButton) e.getSource();
+                String buttonValue = button1.getText();
+                String text = displayLabel.getText();
+                String last = text.substring(text.length() - 1);
+                switch (buttonValue) {
+                    case "." -> {
+                        if ((next) && (!"+-÷×".contains(last))) {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                            next = false;
                         }
-                        case "AC" -> {
-                            displayLabel.setText("0");
+                    }
+                    case "AC" -> {
+                        displayLabel.setText("0");
+                    }
+                    case "+", "-", "÷", "×" -> {
+                        if (!"+-.÷×".contains(last)) {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                            next = true;
                         }
-                        case "+", "-", "÷", "×" -> {
-                            if (!"+-.÷×".contains(last)) {
-                                displayLabel.setText(displayLabel.getText() + buttonValue);
-                                next = true;
-                            }
-                        }
-                        default -> {
-                            if (displayLabel.getText() == "0") displayLabel.setText(buttonValue);
-                            else {
-                                displayLabel.setText(displayLabel.getText() + buttonValue);
-                            }
+                    }
+                    default -> {
+                        if (Objects.equals(displayLabel.getText(), "0")) displayLabel.setText(buttonValue);
+                        else {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
                         }
                     }
                 }
