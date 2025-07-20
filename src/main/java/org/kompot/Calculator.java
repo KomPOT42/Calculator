@@ -1,10 +1,9 @@
-package org.kompot;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Objects;
+import javax.script.*;
 
 public class Calculator extends JFrame {
     int borderWidth = 400;
@@ -30,13 +29,15 @@ public class Calculator extends JFrame {
     JPanel buttonsPanel = new JPanel();
     boolean canPlaceDot = true;
 
+    ScriptEngineManager manager = new ScriptEngineManager();
+    ScriptEngine engine = manager.getEngineByName("js");
+
     Calculator() {
         setVisible(true);
         setTitle("Calculator");
         setSize(borderWidth, borderHeight);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        //setResizable(false);
         setLayout(new BorderLayout());
 
         displayLabel.setBackground(grayNSU);
@@ -55,6 +56,7 @@ public class Calculator extends JFrame {
         buttonsPanel.setBackground(grayNSU);
         add(buttonsPanel);
 
+
         for (String value : buttonValues) {
             JButton button = new JButton();
             button.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -71,36 +73,80 @@ public class Calculator extends JFrame {
             buttonsPanel.add(button);
 
             button.addActionListener(e -> {
+
+                String text = displayLabel.getText();
+                String last = text.substring(text.length() - 1);
+
                 JButton button1 = (JButton) e.getSource();
                 String buttonValue = button1.getText();
-                String text = displayLabel.getText();
-                String last = text.length() > 1 ? text.substring(text.length() - 1) : "";
-                String prevLast = text.length() > 2 ? text.substring(text.length() - 2, text.length() - 1) : "";
                 switch (buttonValue) {
                     case "." -> {
-                        if ((canPlaceDot) && (!"+-÷×".contains(last))) {
-                            displayLabel.setText(displayLabel.getText() + buttonValue);
-                            canPlaceDot = false;
+                        if (canPlaceDot) {
+                            String lastChar = displayLabel.getText().substring(displayLabel.getText().length() - 1);
+                            if (!"+-÷×".contains(lastChar)) {
+                                displayLabel.setText(displayLabel.getText() + ".");
+                                canPlaceDot = false;
+                            }
                         }
                     }
                     case "0" -> {
-                        if (Objects.equals(displayLabel.getText(), "0")) displayLabel.setText("0");
-                        if (!("+-÷×".contains(prevLast) && "0".equals(last))) {
-                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                        String currentText = displayLabel.getText();
+
+                        if (Objects.equals(currentText, "0")) break;
+
+                        char lastChar = currentText.charAt(currentText.length() - 1);
+
+                        if ("+-÷×".indexOf(lastChar) != -1) {
+                            displayLabel.setText(currentText + "0");
+                            break;
                         }
+
+                        String[] tokens = currentText.split("[-+÷×]");
+                        String lastToken = tokens[tokens.length - 1];
+
+                        if (lastToken.equals("0")) break;
+                        displayLabel.setText(currentText + "0");
                     }
-                    case "AC" -> displayLabel.setText("0");
+                    case "AC" -> {
+                        displayLabel.setText("0");
+                        canPlaceDot = true;
+                    }
                     case "+", "-", "÷", "×" -> {
                         if (!"+-.÷×".contains(last)) {
                             displayLabel.setText(displayLabel.getText() + buttonValue);
                             canPlaceDot = true;
                         }
                     }
-                    default -> {
-                        if (Objects.equals(displayLabel.getText(), "0")) displayLabel.setText(buttonValue);
-                        else {
-                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                    case "=" -> {
+                        String currentText = displayLabel.getText();
+                        String mathExpression = currentText.replace("×", "*").replace("÷", "/");
+                        try {
+                            Object result = engine.eval(mathExpression);
+                            displayLabel.setText(result.toString());
+                        } catch (Exception ex) {
+                            displayLabel.setText("Error");
                         }
+                        //displayLabel.setText(mathExpression);
+                    }
+                    default -> {
+                        String currentText = displayLabel.getText();
+
+                        if (Objects.equals(currentText, "0")) {
+                            displayLabel.setText(buttonValue);
+                            break;
+                        }
+
+                        String[] tokens = currentText.split("[+\\-÷×]");
+                        String lastToken = tokens[tokens.length - 1];
+
+                        if (lastToken.equals("0") && currentText.length() > 1) {
+                            char beforeLast = currentText.charAt(currentText.length() - 2);
+                            if ("+-÷×".indexOf(beforeLast) != -1) {
+                                displayLabel.setText(currentText.substring(0, currentText.length() - 1) + buttonValue);
+                                break;
+                            }
+                        }
+                        displayLabel.setText(currentText + buttonValue);
                     }
                 }
             });
