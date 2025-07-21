@@ -25,10 +25,9 @@ public class Calculator extends JFrame {
     String[] topSymbols = {"AC", "()", "←"};
 
     JLabel displayLabel = new JLabel();
-    JPanel displayPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
-    JPanel historyPanel = new JPanel();
     JLabel historyLabel = new JLabel();
+    JPanel topPanel = new JPanel();
     boolean canPlaceDot = true;
     boolean clothingParenthesis = false;
 
@@ -40,7 +39,7 @@ public class Calculator extends JFrame {
             '-', 1,
             '*', 2,
             '/', 2,
-            '√', 3
+            '~', 3
     );
 
     Calculator() {
@@ -59,10 +58,6 @@ public class Calculator extends JFrame {
         displayLabel.setOpaque(true);
         displayLabel.setVisible(true);
 
-        displayPanel.setLayout(new BorderLayout());
-        displayPanel.add(displayLabel);
-        add(displayPanel, BorderLayout.NORTH);
-
         historyLabel.setBackground(grayNSU);
         historyLabel.setForeground(lightGray);
         historyLabel.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -70,15 +65,16 @@ public class Calculator extends JFrame {
         historyLabel.setText("history");
         historyLabel.setOpaque(true);
         historyLabel.setVisible(true);
-
-        historyPanel.setLayout(new BorderLayout());
-        historyPanel.add(historyLabel);
-        historyLabel.setPreferredSize(new Dimension(borderWidth, 100));
-        add(historyPanel, BorderLayout.AFTER_LAST_LINE);
+        historyLabel.setPreferredSize(new Dimension(borderWidth, 50));
 
         buttonsPanel.setLayout(new GridLayout(5, 4));
         buttonsPanel.setBackground(grayNSU);
         add(buttonsPanel);
+
+        topPanel.setLayout(new GridLayout(2, 1));
+        topPanel.add(historyLabel);
+        topPanel.add(displayLabel);
+        add(topPanel, BorderLayout.NORTH);
 
         for (String value : buttonValues) {
             JButton button = new JButton();
@@ -103,7 +99,7 @@ public class Calculator extends JFrame {
                     case "." -> {
                         if (canPlaceDot) {
                             String lastChar = displayLabel.getText().substring(displayLabel.getText().length() - 1);
-                            if (!"+-÷×".contains(lastChar)) {
+                            if (!"+-÷×√".contains(lastChar)) {
                                 if ("Error".contains(lastChar)) displayLabel.setText("0" + buttonValue);
                                 else {
                                     displayLabel.setText(displayLabel.getText() + ".");
@@ -143,6 +139,21 @@ public class Calculator extends JFrame {
                             else {
                                 displayLabel.setText(displayLabel.getText() + buttonValue);
                                 canPlaceDot = true;
+                            }
+                        }
+                    }
+                    case "√" -> {
+                        String currentText = displayLabel.getText();
+                        if (currentText.endsWith("√")) break;
+                        if ("0".equals(currentText)) {
+                            displayLabel.setText("√");
+                        }
+                        else {
+                            String lastChar = currentText.substring(currentText.length() - 1);
+                            if ("0123456789)".contains(lastChar)) {
+                                displayLabel.setText(currentText + "×√");
+                            } else {
+                                displayLabel.setText(currentText + "√");
                             }
                         }
                     }
@@ -195,7 +206,7 @@ public class Calculator extends JFrame {
                             }
                             displayLabel.setText(resultText);
                             historyLabel.setText(expression.replace("*", "×").replace("/", "÷").replace("~", "√") + "=" + resultText);
-                            historyLabel.setForeground(Color.white);
+                            historyLabel.setForeground(lightGrayNSU);
                         } catch (Exception ex) {
                             displayLabel.setText("Error");
                         }
