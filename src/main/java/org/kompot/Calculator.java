@@ -6,12 +6,13 @@ import java.util.List;
 
 public class Calculator extends JFrame {
     int borderWidth = 400;
-    int borderHeight = 600;
+    int borderHeight = 700;
 
     Color grayNSU = new Color(67, 67, 67);
     Color greenNSU = new Color(127, 205, 51);
     Color blueNSU = new Color(29, 191, 234);
     Color lightGrayNSU = new Color(225, 225, 225);
+    Color lightGray = new Color(143, 143, 143);
 
     String[] buttonValues = {
             "AC", "←", "()", "÷",
@@ -26,6 +27,8 @@ public class Calculator extends JFrame {
     JLabel displayLabel = new JLabel();
     JPanel displayPanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
+    JPanel historyPanel = new JPanel();
+    JLabel historyLabel = new JLabel();
     boolean canPlaceDot = true;
     boolean clothingParenthesis = false;
 
@@ -59,6 +62,19 @@ public class Calculator extends JFrame {
         displayPanel.setLayout(new BorderLayout());
         displayPanel.add(displayLabel);
         add(displayPanel, BorderLayout.NORTH);
+
+        historyLabel.setBackground(grayNSU);
+        historyLabel.setForeground(lightGray);
+        historyLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        historyLabel.setHorizontalAlignment(JLabel.RIGHT);
+        historyLabel.setText("history");
+        historyLabel.setOpaque(true);
+        historyLabel.setVisible(true);
+
+        historyPanel.setLayout(new BorderLayout());
+        historyPanel.add(historyLabel);
+        historyLabel.setPreferredSize(new Dimension(borderWidth, 100));
+        add(historyPanel, BorderLayout.AFTER_LAST_LINE);
 
         buttonsPanel.setLayout(new GridLayout(5, 4));
         buttonsPanel.setBackground(grayNSU);
@@ -110,9 +126,15 @@ public class Calculator extends JFrame {
                         displayLabel.setText(currentText + "0");
                     }
                     case "AC" -> {
-                        displayLabel.setText("0");
-                        canPlaceDot = true;
-                        clothingParenthesis = false;
+                        if (displayLabel.getText().equals("0")) {
+                            historyLabel.setText("history");
+                            historyLabel.setForeground(lightGray);
+                        }
+                        else {
+                            displayLabel.setText("0");
+                            canPlaceDot = true;
+                            clothingParenthesis = false;
+                        }
                     }
                     case "+", "-", "÷", "×" -> {
                         String lastChar = displayLabel.getText().substring(displayLabel.getText().length() - 1);
@@ -163,14 +185,17 @@ public class Calculator extends JFrame {
                                     .replace("√", "~");
 
                             double result = evaluateExpression(expression);
+                            String resultText;
 
                             if (result == (int) result) {
-                                displayLabel.setText(String.valueOf((int) result));
+                                resultText = String.valueOf((int) result);
                             } else {
-                                String formatted = String.format("%.10f", result);
-                                formatted = formatted.replaceAll("0*$", "").replaceAll("\\.$", "");
-                                displayLabel.setText(formatted);
+                                resultText = String.format("%.10f", result);
+                                resultText = resultText.replaceAll("0*$", "").replaceAll("\\.$", "");
                             }
+                            displayLabel.setText(resultText);
+                            historyLabel.setText(expression.replace("*", "×").replace("/", "÷").replace("~", "√") + "=" + resultText);
+                            historyLabel.setForeground(Color.white);
                         } catch (Exception ex) {
                             displayLabel.setText("Error");
                         }
