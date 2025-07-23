@@ -14,13 +14,7 @@ public class Calculator extends JFrame {
     Color lightGrayNSU = new Color(225, 225, 225);
     Color lightGray = new Color(143, 143, 143);
 
-    String[] buttonValues = {
-            "AC", "←", "()", "÷",
-            "7", "8", "9", "×",
-            "4", "5", "6", "-",
-            "1", "2", "3", "+",
-            ".", "0", "√", "="
-    };
+    String[] buttonValues = {"AC", "←", "()", "÷", "7", "8", "9", "×", "4", "5", "6", "-", "1", "2", "3", "+", ".", "0", "√", "="};
     String[] rightSymbols = {"÷", "×", "-", "+", "="};
     String[] topSymbols = {"AC", "()", "←"};
 
@@ -34,13 +28,7 @@ public class Calculator extends JFrame {
     private final Stack<Double> numberStack = new Stack<>();
     private final Stack<Character> operatorStack = new Stack<>();
 
-    private final Map<Character, Integer> precedence = Map.of(
-            '+', 1,
-            '-', 1,
-            '*', 2,
-            '/', 2,
-            '~', 3
-    );
+    private final Map<Character, Integer> precedence = Map.of('+', 1, '-', 1, '*', 2, '/', 2, '~', 3);
 
     Calculator() {
         setVisible(true);
@@ -125,8 +113,7 @@ public class Calculator extends JFrame {
                         if (displayLabel.getText().equals("0")) {
                             historyLabel.setText("history");
                             historyLabel.setForeground(lightGray);
-                        }
-                        else {
+                        } else {
                             displayLabel.setText("0");
                             canPlaceDot = true;
                             clothingParenthesis = false;
@@ -147,8 +134,7 @@ public class Calculator extends JFrame {
                         if (currentText.endsWith("√")) break;
                         if ("0".equals(currentText)) {
                             displayLabel.setText("√");
-                        }
-                        else {
+                        } else {
                             String lastChar = currentText.substring(currentText.length() - 1);
                             if ("0123456789)".contains(lastChar)) {
                                 displayLabel.setText(currentText + "×√");
@@ -172,8 +158,7 @@ public class Calculator extends JFrame {
                         if ("Error".contains(lastChar)) {
                             displayLabel.setText("(");
                             clothingParenthesis = true;
-                        }
-                        else {
+                        } else {
                             if (Objects.equals(displayLabel.getText(), "0")) {
                                 displayLabel.setText("(");
                                 clothingParenthesis = true;
@@ -191,9 +176,7 @@ public class Calculator extends JFrame {
                     case "=" -> {
                         try {
                             String expression = displayLabel.getText();
-                            expression = expression.replace("×", "*")
-                                    .replace("÷", "/")
-                                    .replace("√", "~");
+                            expression = expression.replace("×", "*").replace("÷", "/").replace("√", "~");
 
                             double result = evaluateExpression(expression);
                             String resultText;
@@ -220,8 +203,7 @@ public class Calculator extends JFrame {
                         if (Objects.equals(displayLabel.getText(), "0")) {
                             displayLabel.setText(buttonValue);
                             break;
-                        }
-                        else if ("Error".contains(lastChar)) {
+                        } else if ("Error".contains(lastChar)) {
                             displayLabel.setText(buttonValue);
                             break;
                         }
@@ -244,6 +226,7 @@ public class Calculator extends JFrame {
             });
         }
     }
+
     private double evaluateExpression(String expression) {
         expression = expression.replaceAll("\\s+", "");
         expression = expression.replaceAll("\\(-", "(0-");
@@ -264,9 +247,7 @@ public class Calculator extends JFrame {
                 operatorStack.pop();
             } else {
                 char op = token.charAt(0);
-                while (!operatorStack.isEmpty() &&
-                        operatorStack.peek() != '(' &&
-                        precedence.getOrDefault(operatorStack.peek(), 0) >= precedence.getOrDefault(op, 0)) {
+                while (!operatorStack.isEmpty() && operatorStack.peek() != '(' && precedence.getOrDefault(operatorStack.peek(), 0) >= precedence.getOrDefault(op, 0)) {
                     processOperator();
                 }
                 operatorStack.push(op);
@@ -298,9 +279,11 @@ public class Calculator extends JFrame {
         }
         return tokens;
     }
+
     private boolean isNumber(String token) {
         return token.matches("\\d+(\\.\\d+)?");
     }
+
     private void processOperator() {
         char op = operatorStack.pop();
         if (op == '~') {
@@ -321,6 +304,7 @@ public class Calculator extends JFrame {
             }
         }
     }
+
     public static void main(String[] args) {
         new Calculator();
     }
