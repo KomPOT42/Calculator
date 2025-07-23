@@ -1,3 +1,5 @@
+package org.kompot;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -32,7 +34,7 @@ public class Calculator extends JFrame {
 
     Calculator() {
         setVisible(true);
-        setTitle("Calculator");
+        setTitle("Java Cool Calculator v1.0");
         setSize(borderWidth, borderHeight);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -65,18 +67,7 @@ public class Calculator extends JFrame {
         add(topPanel, BorderLayout.NORTH);
 
         for (String value : buttonValues) {
-            JButton button = new JButton();
-            button.setFont(new Font("Arial", Font.PLAIN, 30));
-            button.setText(value);
-            button.setFocusable(false);
-            button.setBorder(new LineBorder(grayNSU));
-            if (Arrays.asList(topSymbols).contains(value)) {
-                button.setBackground(blueNSU);
-                button.setForeground(Color.white);
-            } else if (Arrays.asList(rightSymbols).contains(value)) {
-                button.setBackground(greenNSU);
-                button.setForeground(Color.white);
-            } else button.setBackground(lightGrayNSU);
+            JButton button = getJButton(value);
             buttonsPanel.add(button);
 
             button.addActionListener(e -> {
@@ -227,6 +218,22 @@ public class Calculator extends JFrame {
         }
     }
 
+    private JButton getJButton(String value) {
+        JButton button = new JButton();
+        button.setFont(new Font("Arial", Font.PLAIN, 30));
+        button.setText(value);
+        button.setFocusable(false);
+        button.setBorder(new LineBorder(grayNSU));
+        if (Arrays.asList(topSymbols).contains(value)) {
+            button.setBackground(blueNSU);
+            button.setForeground(Color.white);
+        } else if (Arrays.asList(rightSymbols).contains(value)) {
+            button.setBackground(greenNSU);
+            button.setForeground(Color.white);
+        } else button.setBackground(lightGrayNSU);
+        return button;
+    }
+
     private double evaluateExpression(String expression) {
         expression = expression.replaceAll("\\s+", "");
         expression = expression.replaceAll("\\(-", "(0-");
@@ -303,9 +310,5 @@ public class Calculator extends JFrame {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new Calculator();
     }
 }
